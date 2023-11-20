@@ -1,50 +1,57 @@
-# HarvestHub - Planty of Food (POF) Group Purchasing API
+# HarvestHub - Plant-Based Food Group Buying Management Platform
 
-## Overview
-HarvestHub is a comprehensive REST API developed with Node.js, Express, Sequelize, and MySQL. The platform aims to facilitate the exchange and accessibility of plant-based food, with a special emphasis on group purchasing initiatives for Planty of Food (POF).
+HarvestHub is a REST API built with Node.js and MySQL to support the operations of "Planty of Food" (POF), a company aiming to make plant-based food more accessible through group buying.
 
-## Planty of Food (POF) Integration
-Planty of Food (POF) is a forward-thinking company committed to making plant-based food more accessible. As part of this vision, HarvestHub includes a dedicated platform for group purchasing, separate from the primary e-commerce system. Your role is to contribute to the realization of this group purchasing platform by developing RESTful JSON APIs.
+## Features
 
-## Project Structure
-- `controllers/`: Contains controllers to handle API logic.
-- `models/`: Contains Sequelize models for database tables.
-- `routes/`: Contains route definitions for the APIs.
-- `migrations/`: Contains Sequelize migrations to create tables in the database.
-- `server.js`: The main file that starts the Express server.
+- User, product, and order management
+- Creation, update, and deletion of users, products, and orders
+- Order filtering by date
+- Associations between users, products, and orders
 
 ## Installation
-1. Clone the repository: `git clone <repository_url>`
+
+1. Clone the repository: `git clone https://github.com/DPdotexe/harvesthub.git`
 2. Install dependencies: `npm install`
-3. Run database migrations: `npx sequelize-cli db:migrate --url mysql://username:password@localhost:3306/database`
-4. Start the server: `npm start`
+3. Configure the database and update the `.env` file with your database credentials
+4. Run migrations: `npm run migrate`
+5. Start the server: `npm start`
+
+## Usage
+
+### Users
+
+- `POST /api/users`: Create a new user
+- `GET /api/users`: Get all users
+- `GET /api/users/:id`: Get a specific user
+- `PUT /api/users/:id`: Update a user
+- `DELETE /api/users/:id`: Delete a user
+
+### Products
+
+- `GET /api/products`: Get all products
+- `POST /api/products`: Create a new product
+- `GET /api/products/:id`: Get a specific product
+- `PUT /api/products/:id`: Update a product
+- `DELETE /api/products/:id`: Delete a product
+
+### Orders
+
+- `GET /api/orders`: Get all orders
+- `GET /api/orders/date`: Filter orders by date
+- `GET /api/orders/:id`: Get a specific order
+- `POST /api/orders`: Create a new order
+- `PUT /api/orders/:id`: Update an order
+- `DELETE /api/orders/:id`: Delete an order
 
 ## Environment Variables
-Create a `.env` file in the project root with the following variables:
 
-DB_HOST=your_database_host
-DB_USER=your_database_user
-DB_PASSWORD=your_database_password
-DB_DATABASE=your_database_name
-PORT=3000
-
-
-## Main Dependencies
-- Node.js
-- Express
-- Sequelize
-- MySQL
-
-
-## API Endpoints
-- **Create a Group Purchase:** `POST /api/group-purchases`
-- **Get Group Purchases:** `GET /api/group-purchases`
-- **Get Group Purchase by ID:** `GET /api/group-purchases/:id`
-- **Update Group Purchase:** `PUT /api/group-purchases/:id`
-- **Delete Group Purchase:** `DELETE /api/group-purchases/:id`
-
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss proposed changes.
+- `DB_DATABASE`: MySQL database name
+- `DB_USER`: MySQL database user name
+- `DB_PASSWORD`: MySQL database password
+- `DB_HOST`: MySQL database host
+- `PORT`: Server port
 
 ## License
-This project is licensed under the [ISC License](LICENSE).
+
+This project is licensed under the ISC License - see the [LICENSE.md](LICENSE.md) file for details.
