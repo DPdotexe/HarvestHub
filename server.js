@@ -1,5 +1,7 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const helmet = require('helmet');
+const cors = require('cors');
+
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
@@ -7,20 +9,44 @@ const orderRoutes = require('./routes/orderRoutes');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware to parse JSON data from requests
-app.use(bodyParser.json());
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
 
-// Define routes for managing users, products, and orders
+const Order = require('./models/Order');
+const Product = require('./models/Product');
+const User = require('./models/User');
+
+// Aggiunge le associazioni tra i modelli
+Order.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+Order.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// Aggiunge le rotte
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 
-// Define a route for the root (homepage)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({ error: err.message || 'Something went wrong!' });
+});
+
 app.get('/', (req, res) => {
   res.send('Welcome to my homepage');
 });
 
-// Start the Express server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// Sincronizza i modelli con il database e avvia il server
+async function startServer() {
+  try {
+    await User.sync();
+    await Product.sync();
+    await Order.sync();
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  } catch (error) {
+    console.error('Error syncing models with database:', error);
+  }
+}
+
+startServer();
