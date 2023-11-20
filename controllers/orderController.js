@@ -8,7 +8,6 @@ const  Order = require('../models/Order');
 
 const getAllOrders = async (req, res) => {
   try {
-    // Utilizza gli stessi alias definiti nelle relazioni delle migrazioni e nei modelli
     const orders = await Order.findAll({
       attributes: ['id', 'createdAt', 'updatedAt'],
       include: [
@@ -46,13 +45,13 @@ const createOrder = async (req, res) => {
     const order = await Order.create({ userId: userIds[0] });
 
     const validProducts = req.body.products ?? [];
-
+    
     for (const { productId } of validProducts) {
       if (!productId) {
         return res.status(400).json({ error: 'Invalid productId' });
       }
 
-      await order.addProduct(productId, { through: { productId: productId } });
+      await order.addProduct(productId, { through: { ProductId: productId } });
     }
 
     res.status(201).json({ message: 'Order created successfully', order });
@@ -61,7 +60,6 @@ const createOrder = async (req, res) => {
     res.status(500).json({ error: 'Error while creating order' });
   }
 };
-
 
 ///// filter by date 
 
@@ -130,13 +128,13 @@ const getOrder = async (req, res) => {
           model: Product,
           as: 'Product',
           attributes: ['id', 'name'],
-          through: { attributes: ['productId'] }, 
+          through: { attributes: [] },
         },
       ],
     });
 
     if (order) {
-      res.status(200).json(order);
+      res.status(200).json([order]);  
     } else {
       res.status(404).json({ error: 'Order not found' });
     }
@@ -146,6 +144,7 @@ const getOrder = async (req, res) => {
   }
 };
 
+
 /////// update your order
 
 
@@ -154,7 +153,6 @@ const updateOrder = async (req, res) => {
     const orderId = req.params.id;
     const { productId } = req.body;
 
-    // Trova l'ordine con i modelli associati
     const order = await Order.findByPk(orderId, {
       include: [
         {
@@ -170,10 +168,9 @@ const updateOrder = async (req, res) => {
     });
 
     if (order) {
-      // Aggiorna l'ordine
+
       await order.update(req.body);
 
-      // Aggiorna l'associazione del prodotto se è stato fornito productId
       if (productId) {
         const product = await Product.findByPk(productId);
 
