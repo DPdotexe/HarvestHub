@@ -2,6 +2,8 @@ const { Op, Sequelize } = require('sequelize');
 const   Product   = require('../models/Product');
 const   Order    = require('../models/Order');
 
+//get all products
+
 const getAllProducts = async (req, res) => {
   try {
     const products = await Product.findAll();
@@ -12,7 +14,7 @@ const getAllProducts = async (req, res) => {
   }
 };
 
-///// get product
+///// create product
 
 
 const createProduct = async (req, res) => {

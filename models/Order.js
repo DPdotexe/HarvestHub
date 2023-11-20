@@ -17,10 +17,8 @@ const Order = sequelize.define(
   }
 );
 
-// Aggiungi l'alias 'User' alla relazione con User
-Order.belongsToMany(User, { through: 'orderusers', as: 'User', foreignKey: 'orderId' });
 
-// Aggiungi l'alias 'Product' alla relazione con Product
+Order.belongsToMany(User, { through: 'orderusers', as: 'User', foreignKey: 'orderId' });
 Order.belongsToMany(Product, { through: 'orderproducts', as: 'Product', foreignKey: 'orderId' });
 
 module.exports = Order;
