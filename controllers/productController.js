@@ -2,6 +2,8 @@ const { Op, Sequelize } = require('sequelize');
 const   Product   = require('../models/Product');
 const   Order    = require('../models/Order');
 
+//get all products
+
 const getAllProducts = async (req, res) => {
   try {
     const products = await Product.findAll();
@@ -11,6 +13,9 @@ const getAllProducts = async (req, res) => {
     res.status(500).json({ error: 'Error while getting all products' });
   }
 };
+
+///// create product
+
 
 const createProduct = async (req, res) => {
   try {
@@ -25,32 +30,7 @@ const createProduct = async (req, res) => {
   }
 };
 
-const getProductsByName = async (req, res) => {
-  try {
-    const { name } = req.query;
-    let whereClause = {};
-
-    if (name) {
-      whereClause = {
-        [Op.or]: [
-          sequelize.where(sequelize.fn('LOWER', sequelize.col('name')), 'LIKE', `%${name.toLowerCase()}%`),
-        ],
-      };
-    }
-
-    const products = await Product.findAll({
-      where: whereClause,
-    });
-
-    res.status(200).json(products);
-  } catch (error) {
-    console.error('Error while getting products:', error);
-    res.status(500).json({ error: 'Error while getting products' });
-  }
-};
-
-
-/////// ottieni il prodotto
+/////// get product
 
 
 const getProduct = async (req, res) => {
@@ -69,7 +49,7 @@ const getProduct = async (req, res) => {
   }
 };
 
-////// aggiorna il prodotto
+////// update product
 
 const updateProduct = async (req, res) => {
   try {
@@ -90,7 +70,7 @@ const updateProduct = async (req, res) => {
   }
 };
 
-////////// cancella il prodotto
+////////// delete product
 
 const deleteProduct = async (req, res) => {
   try {
@@ -112,7 +92,6 @@ const deleteProduct = async (req, res) => {
 module.exports = {
   getAllProducts,
   createProduct,
-  getProductsByName,
   getProduct,
   updateProduct,
   deleteProduct,

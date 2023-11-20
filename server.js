@@ -13,15 +13,16 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+// models 
 const Order = require('./models/Order');
 const Product = require('./models/Product');
 const User = require('./models/User');
 
-// Aggiunge le associazioni tra i modelli
+// models associations
 Order.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
 Order.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
-// Aggiunge le rotte
+// routes
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
@@ -35,7 +36,7 @@ app.get('/', (req, res) => {
   res.send('Welcome to my homepage');
 });
 
-// Sincronizza i modelli con il database e avvia il server
+// sync models
 async function startServer() {
   try {
     await User.sync();

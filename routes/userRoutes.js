@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 
-// Create a new user
+// Create a new user 
 
 router.post('/', userController.createUser);
 
-// Get users with optional name filter
+// Get users with optional name filter 
 router.get('/', userController.getAllUsers);
 
-// Get a specific user
+// Get a specific user 
 router.get('/:id', userController.getUser);
 
 // Update a user
