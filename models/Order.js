@@ -1,20 +1,26 @@
 // models/Order.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Product = require('./Product');
 const User = require('./User');
+const Product = require('./Product');
 
-const Order = sequelize.define('Order', {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
+const Order = sequelize.define(
+  'Order',
+  {
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
-  order_date: DataTypes.DATE,
-});
+  {
+    timestamps: true,
+  }
+);
 
-// Definisci le relazioni tra modelli
-Order.belongsToMany(Product, { through: 'OrderProducts' });
-Order.belongsTo(User);
+// Aggiungi l'alias 'User' alla relazione con User
+Order.belongsToMany(User, { through: 'orderusers', as: 'User', foreignKey: 'orderId' });
+
+// Aggiungi l'alias 'Product' alla relazione con Product
+Order.belongsToMany(Product, { through: 'orderproducts', as: 'Product', foreignKey: 'orderId' });
 
 module.exports = Order;

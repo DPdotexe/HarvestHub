@@ -1,28 +1,24 @@
-const { DataTypes, Model } = require('sequelize');
+// user.js
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-class User extends Model {}
-
-User.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    first_name: DataTypes.STRING,
-    last_name: DataTypes.STRING,
-    email: {
-      type: DataTypes.STRING,
-      unique: true,
+const User = sequelize.define('User', {
+  first_name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  last_name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true,
     },
   },
-  {
-    sequelize,
-    modelName: 'User', // Nome del modello
-    tableName: 'users', // Nome della tabella nel database
-    timestamps: false, // Disabilita i campi "createdAt" e "updatedAt"
-  }
-);
+});
 
 module.exports = User;

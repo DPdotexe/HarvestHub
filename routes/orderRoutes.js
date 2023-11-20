@@ -2,16 +2,22 @@ const express = require('express');
 const router = express.Router();
 const orderController = require('../controllers/orderController');
 
-// Create a new order
-router.post('/orders', orderController.createOrder);
+// Rotta per ottenere tutti gli ordini
+router.get('/', orderController.getAllOrders);
 
-// Get a specific order
-router.get('/orders/:id', orderController.getOrder);
+// Rotta per ottenere gli ordini filtrati per data
+router.get('/date', orderController.getOrdersByDate);
 
-// Update an order
-router.put('/orders/:id', orderController.updateOrder);
 
-// Delete an order
-router.delete('/orders/:id', orderController.deleteOrder);
+router.get('/:id', orderController.getOrder);
+
+// Rotta per creare un nuovo ordine
+router.post('/', orderController.createOrder);
+
+// Rotta per aggiornare un ordine esistente
+router.put('/:id', orderController.updateOrder);
+
+// Rotta per cancellare un ordine
+router.delete('/:id', orderController.deleteOrder);
 
 module.exports = router;
