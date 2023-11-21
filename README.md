@@ -1,4 +1,4 @@
-# HarvestHub - Plant-Based Food Group Buying Management Platform
+# HarvestHub - Plant-Based Food Group 
 
 HarvestHub is a REST API built with Node.js and MySQL to support the operations of "Planty of Food" (POF), a company aiming to make plant-based food more accessible through group buying.
 
