@@ -36,7 +36,7 @@ const getAllOrders = async (req, res) => {
 
 const createOrder = async (req, res) => {
   try {
-    const { userIds, productIds, createdAt } = req.body;
+    const { userIds, productIds } = req.body;
 
     if (!userIds || userIds.length === 0 || !productIds || productIds.length === 0) {
       return res.status(400).json({ error: 'Invalid userIds or productIds' });
@@ -159,7 +159,7 @@ const updateOrder = async (req, res) => {
   try {
     const orderId = req.params.id;
     const { productId } = req.body;
-    
+
     const order = await Order.findByPk(orderId, {
       include: [
         {
@@ -176,20 +176,24 @@ const updateOrder = async (req, res) => {
     });
 
     if (order) {
-      if (productId) {
-        const newProduct = await Product.findByPk(productId);
+      await order.update(req.body);
 
-        if (newProduct) {
-          await order.addProduct(newProduct);
+      if (productId) {
+        const product = await Product.findByPk(productId);
+
+        if (product) {
+
+          await order.setProduct([]);
+
+          await order.addProduct(product);
+          
         } else {
           res.status(404).json({ error: 'Product not found' });
           return;
         }
       }
 
-      await order.update({ ...req.body, userId: order.userId });
-
-      res.status(200).json({ message: 'Order updated successfully', order });
+      res.status(200).json({ message: 'Order updated successfully', order: await order.reload() });
     } else {
       res.status(404).json({ error: 'Order not found' });
     }
@@ -198,7 +202,6 @@ const updateOrder = async (req, res) => {
     res.status(500).json({ error: 'Error while updating the order' });
   }
 };
-
 
 
 /////// delete order
