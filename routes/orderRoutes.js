@@ -8,7 +8,7 @@ router.get('/', orderController.getAllOrders);
 // filter by date route
 router.get('/date', orderController.getOrdersByDate);
 
-
+// get order by id
 router.get('/:id', orderController.getOrder);
 
 // create order route
