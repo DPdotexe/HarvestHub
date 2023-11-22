@@ -36,25 +36,37 @@ const getAllOrders = async (req, res) => {
 
 const createOrder = async (req, res) => {
   try {
-    const { userIds, products } = req.body;
+    const { userIds, productIds, createdAt } = req.body;
 
-    if (!userIds || userIds.length === 0) {
-      return res.status(400).json({ error: 'Invalid userIds' });
+    if (!userIds || userIds.length === 0 || !productIds || productIds.length === 0) {
+      return res.status(400).json({ error: 'Invalid userIds or productIds' });
     }
 
-    const order = await Order.create({ userId: userIds[0] });
+    const userId = userIds[0];
 
-    const validProducts = req.body.products ?? [];
-    
-    for (const { productId } of validProducts) {
-      if (!productId) {
-        return res.status(400).json({ error: 'Invalid productId' });
-      }
+    const order = await Order.create({ userId, createdAt });
 
-      await order.addProduct(productId, { through: { ProductId: productId } });
-    }
+    await Promise.all(
+      userIds.map(async (uid) => {
+        const user = await User.findByPk(uid);
+        if (user) {
+          await order.addUser(user, { through: { UserId: user.id } });
+        }
+      })
+    );
 
-    res.status(201).json({ message: 'Order created successfully', order });
+    await Promise.all(
+      productIds.map(async (productId) => {
+        const product = await Product.findByPk(productId);
+        if (product) {
+          await order.addProduct(product, { through: { ProductId: product.id } });
+        }
+      })
+    );
+
+    const { userId: excludedUserId, ...orderWithoutUserId } = order.toJSON();
+
+    res.status(201).json({ message: 'Order created successfully', order: orderWithoutUserId });
   } catch (error) {
     console.error('Error while creating order:', error);
     res.status(500).json({ error: 'Error while creating order' });
@@ -65,20 +77,14 @@ const createOrder = async (req, res) => {
 
 const getOrdersByDate = async (req, res) => {
   try {
-    const { startDate, endDate } = req.query;
+    const { startDate, endDate } = req.query; 
 
     let whereClause = {};
 
     if (startDate && endDate) {
-      console.log('Start Date:', startDate);
-      console.log('End Date:', endDate);
-
       whereClause = {
         createdAt: {
-          [Op.between]: [
-            Sequelize.literal(`CONVERT_TZ('${startDate} 00:00:00', '+00:00', '+03:00')`),
-            Sequelize.literal(`CONVERT_TZ('${endDate} 23:59:59', '+00:00', '+03:00')`),
-          ],
+          [Op.between]: [startDate, new Date(new Date(endDate).setHours(23, 59, 59, 999))],
         },
       };
     }
@@ -102,13 +108,14 @@ const getOrdersByDate = async (req, res) => {
       where: whereClause,
     });
 
+    console.log('orders:', orders);
+
     res.status(200).json(orders);
   } catch (error) {
     console.error('Error while getting orders by date:', error);
     res.status(500).json({ error: 'Error while getting orders by date' });
   }
 };
-
 
 //////// get order by id
 
@@ -152,12 +159,13 @@ const updateOrder = async (req, res) => {
   try {
     const orderId = req.params.id;
     const { productId } = req.body;
-
+    
     const order = await Order.findByPk(orderId, {
       include: [
         {
           model: User,
           as: 'User',
+          through: 'orderusers'
         },
         {
           model: Product,
@@ -168,21 +176,20 @@ const updateOrder = async (req, res) => {
     });
 
     if (order) {
-
-      await order.update(req.body);
-
       if (productId) {
-        const product = await Product.findByPk(productId);
+        const newProduct = await Product.findByPk(productId);
 
-        if (product) {
-          await order.setProducts([product]);
+        if (newProduct) {
+          await order.addProduct(newProduct);
         } else {
           res.status(404).json({ error: 'Product not found' });
           return;
         }
       }
 
-      res.status(200).json({ message: 'Order updated successfully' });
+      await order.update({ ...req.body, userId: order.userId });
+
+      res.status(200).json({ message: 'Order updated successfully', order });
     } else {
       res.status(404).json({ error: 'Order not found' });
     }
@@ -191,6 +198,7 @@ const updateOrder = async (req, res) => {
     res.status(500).json({ error: 'Error while updating the order' });
   }
 };
+
 
 
 /////// delete order
