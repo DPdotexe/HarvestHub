@@ -108,8 +108,6 @@ const getOrdersByDate = async (req, res) => {
       where: whereClause,
     });
 
-    console.log('orders:', orders);
-
     res.status(200).json(orders);
   } catch (error) {
     console.error('Error while getting orders by date:', error);
