@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "migrate": "sequelize db:migrate --url 'mysql://root:27006@localhost:3306/mydb'"
+    "migrate": "sequelize db:migrate"
   },
   "author": "DP",
   "license": "ISC",
